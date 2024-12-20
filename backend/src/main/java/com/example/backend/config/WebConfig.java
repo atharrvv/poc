@@ -13,10 +13,12 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                // Allowing all origins, headers, and methods
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowedHeaders("*")
-                        .allowedMethods("*");
+                        .allowedOrigins("*")  // Allow all origins
+                        .allowedHeaders("*")  // Allow all headers
+                        .allowedMethods("*")  // Allow all HTTP methods
+                        .allowCredentials(false);  // Allow credentials (cookies, HTTP authentication, etc.)
             }
         };
     }
