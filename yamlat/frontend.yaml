@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: sarocky/react-product-app_react-app:latest
+        image: keanu.azurecr.io/frontend
         ports:
         - containerPort: 80  # Set this to 80 since the app is served on port 80 via Nginx
 ---
@@ -29,4 +29,4 @@ spec:
     - protocol: TCP
       port: 80  # Exposed service port
       targetPort: 80  # Target port inside the container (80 for Nginx)
-  type: NodePort
+  type: LoadBalancer
