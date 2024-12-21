@@ -37,10 +37,16 @@ pipeline {
                 }
             }
         }
-        stage ('frontend Build'){
+        stage ('IP merege') {
             steps {
                 script {
                     sh 'bash ./frontend/ip.sh'
+                }
+            }
+        }
+        stage ('frontend Build'){
+            steps {
+                script {
                     docker.build('keanu.azurecr.io/frontend', './frontend')
                 }
             }
