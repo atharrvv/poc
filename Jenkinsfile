@@ -11,31 +11,55 @@ pipeline {
                     }
                 }
             }
-        stage('Build images') {
+        // stage ('Backend Build') {
+        //     steps {
+        //         script {
+        //             docker.build('keanu.azurecr.io/backend', './backend')
+        //         }
+        //     }
+        // }
+        // stage ('Backend to ACR') {
+        //     steps {
+        //         script {
+        //             docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+        //                 docker.image("keanu.azurecr.io/backend:latest").push()
+        //             }
+        //         }
+        //     }
+        // }
+        stage ('Backend Apply') {
             steps {
                 script {
-                    docker.build('keanu.azurecr.io/frontend-h', './frontend')
-                    docker.build('keanu.azurecr.io/backend-h', './backend')
-                }
-            }
-        }
-        stage('Docker hub') {
-            steps {
-                script {
-                    docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/frontend:latest").push()
-                        docker.image("keanu.azurecr.io/backend:latest").push()
+                    withCredentials([azureServicePrincipal('azure_principle')]) {
+                        sh 'az aks get-credentials --resource-group group --name rolex'
+                        sh 'kubectl apply -f ./yamlat/backend.yml'
                     }
                 }
             }
         }
-        stage ('kubectl apply') {
+        stage ('frontend Build'){
+            steps {
+                script {
+                    sh 'bash ./frontend/ip.sh'
+                    docker.build('keanu.azurecr.io/frontend', './frontend')
+                }
+            }
+        }
+        stage('Frontend to ACR') {
+            steps {
+                script {
+                    docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+                        docker.image("keanu.azurecr.io/frontend:latest").push()
+                    }
+                }
+            }
+        }
+        stage ('Frontend apply') {
             steps {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]){
                         sh 'az aks get-credentials --resource-group group --name rolex'
-                        sh 'kubectl apply -f backend.yml'
-                        sh 'kubectl apply -f frontend.yml'
+                        sh 'kubectl apply -f ./yamlat/frontend.yml'
                     }
                 }
             }
