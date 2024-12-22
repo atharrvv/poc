@@ -5,6 +5,8 @@ pipeline {
         DB_USER = credentials('DB_USER')
         DB_PASSWORD = credentials('DB_PASSWORD')
     }
+
+    stages {
         stage ('AZ login') {
             steps {
                 script {
