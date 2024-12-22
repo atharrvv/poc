@@ -1,16 +1,30 @@
 pipeline {
     agent any
+    environment {
+        DB_URL = credentials('DB_URL')
+        DB_USER = credentials('DB_USER')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+    }
     stages {
-        stage ('AZ login') {
+        stage ('test') {
             steps {
                 script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh  'az acr login --name keanu'
-                        }
-                    }
+                    echo "Using DB_URL: ${DB_URL}"
+                    echo "Using DB_USER: ${DB_USER}"
                 }
             }
+            
+        }
+        // stage ('AZ login') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+        //                 sh  'az acr login --name keanu'
+        //                 }
+        //             }
+        //         }
+        //     }
         // stage ('Backend Build') {
         //     steps {
         //         script {
@@ -27,22 +41,22 @@ pipeline {
         //         }
         //     }
         // }
-        stage ('Backend Apply') {
-            steps {
-                script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az aks get-credentials --resource-group group --name rolex'
-                        sh """
-                        kubectl create secret generic db-credentials \
-                        --from-literal=DB_URL=${DB_URL} \
-                        --from-literal=DB_USER=${DB_USER} \
-                        --from-literal=DB_PASSWORD=${DB_PASSWORD}
-                        """
-                        // sh 'kubectl apply -f ./yamlat/backend.yaml'
-                    }
-                }
-            }
-        }
+        // stage ('Backend Apply') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 sh 'az aks get-credentials --resource-group group --name rolex'
+        //                 sh """
+        //                 kubectl create secret generic db-credentials \
+        //                 --from-literal=DB_URL=${DB_URL} \
+        //                 --from-literal=DB_USER=${DB_USER} \
+        //                 --from-literal=DB_PASSWORD=${DB_PASSWORD}
+        //                 """
+        //                 // sh 'kubectl apply -f ./yamlat/backend.yaml'
+        //             }
+        //         }
+        //     }
+        // }
         // stage ('IP merege') {
         //     steps {
         //         script {
