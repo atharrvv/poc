@@ -19,11 +19,11 @@ spec:
         - containerPort: 8080
         env:
         - name: SPRING_DATASOURCE_URL
-          value: jdbc:mysql://computer.mysql.database.azure.com:3306/product?useSSL=true  # Ensure this matches your MySQL service
+          value: DB_URL  # Ensure this matches your MySQL service
         - name: SPRING_DATASOURCE_USERNAME
-          value: chris
+          value: DB_USER
         - name: SPRING_DATASOURCE_PASSWORD
-          value: chris@123
+          value: DB_PASSWORD
 ---
 apiVersion: v1
 kind: Service
