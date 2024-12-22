@@ -11,22 +11,22 @@ pipeline {
                     }
                 }
             }
-        stage ('Backend Build') {
-            steps {
-                script {
-                    docker.build('keanu.azurecr.io/backend-s', './backend')
-                }
-            }
-        }
-        stage ('Backend to ACR') {
-            steps {
-                script {
-                    docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/backend-s:latest").push()
-                    }
-                }
-            }
-        }
+        // stage ('Backend Build') {
+        //     steps {
+        //         script {
+        //             docker.build('keanu.azurecr.io/backend-s', './backend')
+        //         }
+        //     }
+        // }
+        // stage ('Backend to ACR') {
+        //     steps {
+        //         script {
+        //             docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+        //                 docker.image("keanu.azurecr.io/backend-s:latest").push()
+        //             }
+        //         }
+        //     }
+        // }
         stage ('Backend Apply') {
             steps {
                 script {
