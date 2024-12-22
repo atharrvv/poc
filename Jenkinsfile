@@ -32,6 +32,12 @@ pipeline {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]) {
                         sh 'az aks get-credentials --resource-group group --name rolex'
+                        // sh """
+                        // kubectl create secret generic db-credentials \
+                        // --from-literal=DB_URL=jdbc:mysql://computer.mysql.database.azure.com:3306/product?useSSL=true \
+                        // --from-literal=DB_USER=chris \
+                        // --from-literal=DB_PASSWORD=chris@123
+                        // """
                         sh 'kubectl apply -f ./yamlat/backend.yaml'
                     }
                 }
