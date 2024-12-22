@@ -5,91 +5,81 @@ pipeline {
         DB_USER = credentials('DB_USER')
         DB_PASSWORD = credentials('DB_PASSWORD')
     }
-    stages {
-        stage ('test') {
+        stage ('AZ login') {
             steps {
                 script {
-                    echo "Using DB_URL: ${DB_URL}"
-                    echo "Using DB_USER: ${DB_USER}"
+                    withCredentials([azureServicePrincipal('azure_principle')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh  'az acr login --name keanu'
+                        }
+                    }
                 }
             }
-            
+        stage ('Backend Build') {
+            steps {
+                script {
+                    docker.build('keanu.azurecr.io/backend-s', './backend')
+                }
+            }
         }
-        // stage ('AZ login') {
-        //     steps {
-        //         script {
-        //             withCredentials([azureServicePrincipal('azure_principle')]) {
-        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-        //                 sh  'az acr login --name keanu'
-        //                 }
-        //             }
-        //         }
-        //     }
-        // stage ('Backend Build') {
-        //     steps {
-        //         script {
-        //             docker.build('keanu.azurecr.io/backend-s', './backend')
-        //         }
-        //     }
-        // }
-        // stage ('Backend to ACR') {
-        //     steps {
-        //         script {
-        //             docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-        //                 docker.image("keanu.azurecr.io/backend-s:latest").push()
-        //             }
-        //         }
-        //     }
-        // }
-        // stage ('Backend Apply') {
-        //     steps {
-        //         script {
-        //             withCredentials([azureServicePrincipal('azure_principle')]) {
-        //                 sh 'az aks get-credentials --resource-group group --name rolex'
-        //                 sh """
-        //                 kubectl create secret generic db-credentials \
-        //                 --from-literal=DB_URL=${DB_URL} \
-        //                 --from-literal=DB_USER=${DB_USER} \
-        //                 --from-literal=DB_PASSWORD=${DB_PASSWORD}
-        //                 """
-        //                 // sh 'kubectl apply -f ./yamlat/backend.yaml'
-        //             }
-        //         }
-        //     }
-        // }
-        // stage ('IP merege') {
-        //     steps {
-        //         script {
-        //             sh 'bash ./frontend/ip.sh'
-        //         }
-        //     }
-        // }
-        // stage ('frontend Build'){
-        //     steps {
-        //         script {
-        //             docker.build('keanu.azurecr.io/frontend', './frontend')
-        //         }
-        //     }
-        // }
-        // stage('Frontend to ACR') {
-        //     steps {
-        //         script {
-        //             docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-        //                 docker.image("keanu.azurecr.io/frontend:latest").push()
-        //             }
-        //         }
-        //     }
-        // }
-        // stage ('Frontend apply') {
-        //     steps {
-        //         script {
-        //             withCredentials([azureServicePrincipal('azure_principle')]){
-        //                 sh 'az aks get-credentials --resource-group group --name rolex'
-        //                 sh 'kubectl apply -f ./yamlat/frontend.yaml'
-        //             }
-        //         }
-        //     }
-        // }
+        stage ('Backend to ACR') {
+            steps {
+                script {
+                    docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+                        docker.image("keanu.azurecr.io/backend-s:latest").push()
+                    }
+                }
+            }
+        }
+        stage ('Backend Apply') {
+            steps {
+                script {
+                    withCredentials([azureServicePrincipal('azure_principle')]) {
+                        sh 'az aks get-credentials --resource-group group --name rolex'
+                        sh """
+                        kubectl create secret generic db-credentials \
+                        --from-literal=DB_URL=${DB_URL} \
+                        --from-literal=DB_USER=${DB_USER} \
+                        --from-literal=DB_PASSWORD=${DB_PASSWORD}
+                        """
+                        sh 'kubectl apply -f ./yamlat/backend.yaml'
+                    }
+                }
+            }
+        }
+        stage ('IP merege') {
+            steps {
+                script {
+                    sh 'bash ./frontend/ip.sh'
+                }
+            }
+        }
+        stage ('frontend Build'){
+            steps {
+                script {
+                    docker.build('keanu.azurecr.io/frontend', './frontend')
+                }
+            }
+        }
+        stage('Frontend to ACR') {
+            steps {
+                script {
+                    docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+                        docker.image("keanu.azurecr.io/frontend:latest").push()
+                    }
+                }
+            }
+        }
+        stage ('Frontend apply') {
+            steps {
+                script {
+                    withCredentials([azureServicePrincipal('azure_principle')]){
+                        sh 'az aks get-credentials --resource-group group --name rolex'
+                        sh 'kubectl apply -f ./yamlat/frontend.yaml'
+                    }
+                }
+            }
+        }
         // stage ('AKS') {
         //     steps {
         //         script{
