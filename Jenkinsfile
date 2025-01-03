@@ -20,7 +20,7 @@ pipeline {
         stage ('Backend Build') {
             steps {
                 script {
-                    docker.build('keanu.azurecr.io/backendd', './backend')
+                    docker.build('keanu.azurecr.io/backend-s', './backend')
                 }
             }
         }
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/backendd:latest").push()
+                        docker.image("keanu.azurecr.io/backend-s:latest").push()
                     }
                 }
             }
@@ -59,7 +59,7 @@ pipeline {
         stage ('frontend Build'){
             steps {
                 script {
-                    docker.build('keanu.azurecr.io/frontendd', './frontend')
+                    docker.build('keanu.azurecr.io/frontend', './frontend')
                 }
             }
         }
@@ -67,7 +67,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/frontendd:latest").push()
+                        docker.image("keanu.azurecr.io/frontend:latest").push()
                     }
                 }
             }
