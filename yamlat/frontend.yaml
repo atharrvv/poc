@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: keanu.azurecr.io/frontend
+        image: keanu.azurecr.io/frontendd
         ports:
         - containerPort: 80  # Set this to 80 since the app is served on port 80 via Nginx
 ---
