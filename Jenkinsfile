@@ -20,7 +20,7 @@ pipeline {
         stage ('Backend Build') {
             steps {
                 script {
-                    docker.build('keanu.azurecr.io/backend-s', './backend')
+                    docker.build('keanu.azurecr.io/backendd', './backend')
                 }
             }
         }
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/backend-s:latest").push()
+                        docker.image("keanu.azurecr.io/backendd:latest").push()
                     }
                 }
             }
@@ -39,11 +39,11 @@ pipeline {
                     withCredentials([azureServicePrincipal('azure_principle')]) {
                         sh 'az aks get-credentials --resource-group group --name rolex'
                         sh """
-                        kubectl create secret generic db-credentials \
-                        --from-literal=DB_URL=${DB_URL} \
-                        --from-literal=DB_USER=${DB_USER} \
-                        --from-literal=DB_PASSWORD=${DB_PASSWORD}
-                        """
+                        // kubectl create secret generic db-credentials \
+                        // --from-literal=DB_URL=${DB_URL} \
+                        // --from-literal=DB_USER=${DB_USER} \
+                        // --from-literal=DB_PASSWORD=${DB_PASSWORD}
+                        // """
                         sh 'kubectl apply -f ./yamlat/backend.yaml'
                     }
                 }
@@ -59,7 +59,7 @@ pipeline {
         stage ('frontend Build'){
             steps {
                 script {
-                    docker.build('keanu.azurecr.io/frontend', './frontend')
+                    docker.build('keanu.azurecr.io/frontendd', './frontend')
                 }
             }
         }
@@ -67,7 +67,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/frontend:latest").push()
+                        docker.image("keanu.azurecr.io/frontendd:latest").push()
                     }
                 }
             }
