@@ -7,11 +7,31 @@ pipeline {
     }
 
     stages {
-        stage ('AZ login') {
+        stage ('Terraform init') {
+            steps {
+                script {
+                    sh "terraform init ./terraform/"
+                    sh "terraform validate ./terraform/"
+                    sh "terraform plan ./terraform"
+                    sh "terraform apply -auto-approve ./terraform"
+                }
+            }
+        }
+        stage ('AKS configure') {
             steps {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh  'az aks get-credentials --resource-group terra-resource --name dilli'
+                    }
+                }
+            }
+        }
+        stage ('AZ login') {
+            steps {
+                script {
+                    withCredentials([azureServicePrincipal('azure_principle')]) {
+                        // sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh  'az acr login --name keanu'
                         }
                     }
@@ -37,7 +57,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az aks get-credentials --resource-group group --name rolex'
+                        // sh 'az aks get-credentials --resource-group group --name rolex'
                         // sh """
                         // kubectl create secret generic db-credentials \
                         // --from-literal=DB_URL=${DB_URL} \
@@ -76,7 +96,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]){
-                        sh 'az aks get-credentials --resource-group group --name rolex'
+                        // sh 'az aks get-credentials --resource-group group --name rolex'
                         sh 'kubectl apply -f ./yamlat/frontend.yaml'
                     }
                 }
