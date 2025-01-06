@@ -10,7 +10,7 @@ pipeline {
         stage ('Terraform init') {
             steps {
                 script {
-                        sh "cd ./terraform && terraform init"
+                        sh "cd ./terraform && terraform init && terrafrom validate && terrafrom plan && terrafrom apply -auto-approve"
                 }
             }
         }
