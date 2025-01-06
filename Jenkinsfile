@@ -10,10 +10,10 @@ pipeline {
         stage ('Terraform init') {
             steps {
                 script {
-                    sh "terraform init ./terraform"
-                    sh "terraform validate ./terraform"
-                    sh "terraform plan ./terraform"
-                    sh "terraform apply -auto-approve ./terraform"
+                    sh "terraform init -chdir=./terraform"
+                    sh "terraform validate -chdir=./terraform"
+                    sh "terraform plan -chdir=./terraform"
+                    sh "terraform apply -chdir=-auto-approve ./terraform"
                 }
             }
         }
