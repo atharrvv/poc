@@ -1,7 +1,7 @@
 provider "azurerm" {
-  subscription_id = "SUBSCRIPTION_ID"
-  client_id       = "CLIENT_ID"
-  client_secret   = "CLIENT_SECRET"
-  tenant_id       = "TENANT_ID"
+  subscription_id = "${{ secrets.SUBSCRIPTION_ID }}"
+  client_id       = "${{ secrets.CLIENT_ID }}"
+  client_secret   = "${{ secrets.CLIENT_SECRET }}"
+  tenant_id       = "${{ secrets.TENANT_ID }}"
   features {}
 }
