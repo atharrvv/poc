@@ -10,7 +10,10 @@ pipeline {
         stage ('Terraform init') {
             steps {
                 script {
+                    withCredentials([azureServicePrincipal('azure_principle')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh "cd ./terraform && terraform init && terraform plan && terraform apply -auto-approve"
+                    }
                 }
             }
         }
