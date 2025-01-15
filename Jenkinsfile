@@ -54,22 +54,22 @@ pipeline {
         //         }
         //     }
         // }
-        // stage ('Backend Apply') {
-        //     steps {
-        //         script {
-        //             withCredentials([azureServicePrincipal('azure_principle')]) {
-        //                 // sh 'az aks get-credentials --resource-group group --name rolex'
-        //                 sh """
-        //                 kubectl create secret generic db-credentials \
-        //                 --from-literal=DB_URL=${DB_URL} \
-        //                 --from-literal=DB_USER=${DB_USER} \
-        //                 --from-literal=DB_PASSWORD=${DB_PASSWORD}
-        //                 """
-        //                 sh 'kubectl apply -f ./yamlat/backend.yaml'
-        //             }
-        //         }
-        //     }
-        // }
+        stage ('Backend Apply') {
+            steps {
+                script {
+                    withCredentials([azureServicePrincipal('azure_principle')]) {
+                        // sh 'az aks get-credentials --resource-group group --name rolex'
+                        // sh """
+                        // kubectl create secret generic db-credentials \
+                        // --from-literal=DB_URL=${DB_URL} \
+                        // --from-literal=DB_USER=${DB_USER} \
+                        // --from-literal=DB_PASSWORD=${DB_PASSWORD}
+                        // """
+                        sh 'kubectl apply -f ./yamlat/backend.yaml'
+                    }
+                }
+            }
+        }
         // stage ('IP merege') {
         //     steps {
         //         script {
@@ -84,16 +84,16 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Frontend to ACR') {
-            steps {
-                script {
-                    // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                    //     docker.image("keanu.azurecr.io/frontendd:latest").push()
-                    // }
-                    sh "az acr login --name billgates && docker push billgates.azurecr.io/frontend"
-                }
-            }
-        }
+        // stage('Frontend to ACR') {
+        //     steps {
+        //         script {
+        //             // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+        //             //     docker.image("keanu.azurecr.io/frontendd:latest").push()
+        //             // }
+        //             sh "az acr login --name billgates && docker push billgates.azurecr.io/frontend"
+        //         }
+        //     }
+        // }
         stage ('Frontend apply') {
             steps {
                 script {
