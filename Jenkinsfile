@@ -7,90 +7,90 @@ pipeline {
     }
 
     stages {
-        stage ('Terraform init') {
-            steps {
-                script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh "cd ./terraform && terraform init && terraform plan && terraform apply -auto-approve"
-                    }
-                }
-            }
-        }
-        stage ('AKS configure') {
-            steps {
-                script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
-                    }
-                }
-            }
-        }
-        stage ('AZ login') {
-            steps {
-                script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh  'az acr login --name billgates'
-                        }
-                    }
-                }
-            }
-        stage ('Backend Build') {
-            steps {
-                script {
-                    docker.build('billgates.azurecr.io/backendd', './backend')
-                }
-            }
-        }
-        stage ('Backend to ACR') {
-            steps {
-                script {
-                    // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                    //     docker.image("keanu.azurecr.io/backendd:latest").push()
-                    // }
-                    sh "az acr login --name billgates && docker push billgates.azurecr.io/backend"
-                }
-            }
-        }
-        stage ('Backend Apply') {
-            steps {
-                script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        // sh 'az aks get-credentials --resource-group group --name rolex'
-                        sh """
-                        kubectl create secret generic db-credentials \
-                        --from-literal=DB_URL=${DB_URL} \
-                        --from-literal=DB_USER=${DB_USER} \
-                        --from-literal=DB_PASSWORD=${DB_PASSWORD}
-                        """
-                        sh 'kubectl apply -f ./yamlat/backend.yaml'
-                    }
-                }
-            }
-        }
-        stage ('IP merege') {
-            steps {
-                script {
-                    sh 'bash ./frontend/ip.sh'
-                }
-            }
-        }
-        stage ('frontend Build'){
-            steps {
-                script {
-                    docker.build('billgates.azurecr.io/frontendd', './frontend')
-                }
-            }
-        }
+        // stage ('Terraform init') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+        //                 sh "cd ./terraform && terraform init && terraform plan && terraform apply -auto-approve"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage ('AKS configure') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+        //                 sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
+        //             }
+        //         }
+        //     }
+        // }
+        // stage ('AZ login') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+        //                 sh  'az acr login --name billgates'
+        //                 }
+        //             }
+        //         }
+        //     }
+        // stage ('Backend Build') {
+        //     steps {
+        //         script {
+        //             docker.build('billgates.azurecr.io/backendd', './backend')
+        //         }
+        //     }
+        // }
+        // stage ('Backend to ACR') {
+        //     steps {
+        //         script {
+        //             // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+        //             //     docker.image("keanu.azurecr.io/backendd:latest").push()
+        //             // }
+        //             sh "az acr login --name billgates && docker push billgates.azurecr.io/backend"
+        //         }
+        //     }
+        // }
+        // stage ('Backend Apply') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 // sh 'az aks get-credentials --resource-group group --name rolex'
+        //                 sh """
+        //                 kubectl create secret generic db-credentials \
+        //                 --from-literal=DB_URL=${DB_URL} \
+        //                 --from-literal=DB_USER=${DB_USER} \
+        //                 --from-literal=DB_PASSWORD=${DB_PASSWORD}
+        //                 """
+        //                 sh 'kubectl apply -f ./yamlat/backend.yaml'
+        //             }
+        //         }
+        //     }
+        // }
+        // stage ('IP merege') {
+        //     steps {
+        //         script {
+        //             sh 'bash ./frontend/ip.sh'
+        //         }
+        //     }
+        // }
+        // stage ('frontend Build'){
+        //     steps {
+        //         script {
+        //             docker.build('billgates.azurecr.io/frontendd', './frontend')
+        //         }
+        //     }
+        // }
         stage('Frontend to ACR') {
             steps {
                 script {
                     // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
                     //     docker.image("keanu.azurecr.io/frontendd:latest").push()
                     // }
-                    sh "az acr login --name billgate && docker push billgates.azurecr.io/frontend"
+                    sh "az acr login --name billgates && docker push billgates.azurecr.io/frontend"
                 }
             }
         }
