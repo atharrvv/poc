@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: spring-boot-app
-        image: keanu.azurecr.io/backendd
+        image: billgates.azurecr.io/backend
         ports:
         - containerPort: 8080
         envFrom:
