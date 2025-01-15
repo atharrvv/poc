@@ -32,7 +32,7 @@ pipeline {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh  'az acr login --name keanu'
+                        sh  'az acr login --name billgates'
                         }
                     }
                 }
@@ -40,16 +40,17 @@ pipeline {
         stage ('Backend Build') {
             steps {
                 script {
-                    docker.build('keanu.azurecr.io/backendd', './backend')
+                    docker.build('billgates.azurecr.io/backendd', './backend')
                 }
             }
         }
         stage ('Backend to ACR') {
             steps {
                 script {
-                    docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/backendd:latest").push()
-                    }
+                    // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+                    //     docker.image("keanu.azurecr.io/backendd:latest").push()
+                    // }
+                    sh "az acr login --name billgates && docker push billgates.azurecr.io/backend"
                 }
             }
         }
@@ -79,16 +80,17 @@ pipeline {
         stage ('frontend Build'){
             steps {
                 script {
-                    docker.build('keanu.azurecr.io/frontendd', './frontend')
+                    docker.build('billgates.azurecr.io/frontendd', './frontend')
                 }
             }
         }
         stage('Frontend to ACR') {
             steps {
                 script {
-                    docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-                        docker.image("keanu.azurecr.io/frontendd:latest").push()
-                    }
+                    // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+                    //     docker.image("keanu.azurecr.io/frontendd:latest").push()
+                    // }
+                    sh "az acr login --name billgate && docker push billgates.azurecr.io/frontend"
                 }
             }
         }
