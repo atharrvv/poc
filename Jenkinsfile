@@ -98,7 +98,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]){
-                        sh 'az aks get-credentials --resource-group group --name rolex'
+                        sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
                         sh 'kubectl apply -f ./yamlat/frontend.yaml'
                     }
                 }
