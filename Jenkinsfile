@@ -37,23 +37,23 @@ pipeline {
         //             }
         //         }
         //     }
-        // stage ('Backend Build') {
-        //     steps {
-        //         script {
-        //             docker.build('billgates.azurecr.io/backendd', './backend')
-        //         }
-        //     }
-        // }
-        // stage ('Backend to ACR') {
-        //     steps {
-        //         script {
-        //             // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
-        //             //     docker.image("keanu.azurecr.io/backendd:latest").push()
-        //             // }
-        //             sh "az acr login --name billgates && docker push billgates.azurecr.io/backend"
-        //         }
-        //     }
-        // }
+        stage ('Backend Build') {
+            steps {
+                script {
+                    docker.build('billgates.azurecr.io/backendd', './backend')
+                }
+            }
+        }
+        stage ('Backend to ACR') {
+            steps {
+                script {
+                    // docker.withRegistry('https://keanu.azurecr.io', 'acr') {
+                    //     docker.image("keanu.azurecr.io/backendd:latest").push()
+                    // }
+                    sh "az acr login --name billgates && docker push billgates.azurecr.io/backend"
+                }
+            }
+        }
         stage ('Backend Apply') {
             steps {
                 script {
