@@ -17,16 +17,16 @@ pipeline {
         //         }
         //     }
         // }
-        // stage ('AKS configure') {
-        //     steps {
-        //         script {
-        //             withCredentials([azureServicePrincipal('azure_principle')]) {
-        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-        //                 sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
-        //             }
-        //         }
-        //     }
-        // }
+        stage ('AKS configure') {
+            steps {
+                script {
+                    withCredentials([azureServicePrincipal('azure_principle')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
+                    }
+                }
+            }
+        }
         // stage ('AZ login') {
         //     steps {
         //         script {
