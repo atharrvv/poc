@@ -7,26 +7,26 @@ pipeline {
     }
 
     stages {
-        stage ('Terraform init') {
-            steps {
-                script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh "cd ./terraform && terraform init && terraform plan && terraform apply -auto-approve"
-                    }
-                }
-            }
-        }
-        stage ('AKS configure') {
-            steps {
-                script {
-                    withCredentials([azureServicePrincipal('azure_principle')]) {
-                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
-                    }
-                }
-            }
-        }
+        // stage ('Terraform init') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+        //                 sh "cd ./terraform && terraform init && terraform plan && terraform apply -auto-approve"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage ('AKS configure') {
+        //     steps {
+        //         script {
+        //             withCredentials([azureServicePrincipal('azure_principle')]) {
+        //                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+        //                 sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
+        //             }
+        //         }
+        //     }
+        // }
         stage ('AZ login') {
             steps {
                 script {
@@ -40,7 +40,7 @@ pipeline {
         stage ('Backend Build') {
             steps {
                 script {
-                    docker.build('billgates.azurecr.io/backendd', './backend')
+                    docker.build('billgates.azurecr.io/backend', './backend')
                 }
             }
         }
@@ -59,12 +59,12 @@ pipeline {
                 script {
                     withCredentials([azureServicePrincipal('azure_principle')]) {
                         sh  'az aks get-credentials --resource-group terra-resource --name dilli --overwrite-existing'
-                        sh """
-                        kubectl create secret generic db-credentials \
-                        --from-literal=DB_URL=${DB_URL} \
-                        --from-literal=DB_USER=${DB_USER} \
-                        --from-literal=DB_PASSWORD=${DB_PASSWORD}
-                        """
+                        // sh """
+                        // kubectl create secret generic db-credentials \
+                        // --from-literal=DB_URL=${DB_URL} \
+                        // --from-literal=DB_USER=${DB_USER} \
+                        // --from-literal=DB_PASSWORD=${DB_PASSWORD}
+                        // """
                         sh 'kubectl apply -f ./yamlat/backend.yaml'
                     }
                 }
@@ -80,7 +80,7 @@ pipeline {
         stage ('frontend Build'){
             steps {
                 script {
-                    docker.build('billgates.azurecr.io/frontendd', './frontend')
+                    docker.build('billgates.azurecr.io/frontend', './frontend')
                 }
             }
         }
